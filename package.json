@@ -10,6 +10,7 @@
   "build": {
     "appId": "com.escapido.widget",
     "productName": "EscapidoWidget",
+    "publish": null,
     "files": [
       "main.js",
       "package.json",
