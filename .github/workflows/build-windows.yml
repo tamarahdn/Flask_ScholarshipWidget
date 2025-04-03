@@ -11,29 +11,28 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: ⬇️ Checkout code
-      uses: actions/checkout@v3
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v3
 
-    - name: 🐍 Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
 
-    - name: 📦 Install dependencies
-      run: |
-        python -m venv venv
-        venv\Scripts\activate
-        pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: 📦 Install dependencies
+        run: |
+          python -m venv venv
+          .\venv\Scripts\activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
 
-    - name: 🛠️ Build with PyInstaller
-      run: |
-        venv\Scripts\activate
-        pyinstaller --noconfirm --onefile app.py
+      - name: 🛠️ Build with PyInstaller
+        run: |
+          .\venv\Scripts\activate
+          pyinstaller --noconfirm --onefile app.py
 
-    - name: 📤 Upload EXE artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: escapido_app_exe
-        path: dist/app.exe
-
+      - name: 📤 Upload EXE artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: escapido_app_exe
+          path: dist/app.exe
