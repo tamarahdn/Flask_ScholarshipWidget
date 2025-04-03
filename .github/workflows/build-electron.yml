@@ -1,0 +1,46 @@
+name: Build Full Electron EXE
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: 🐍 Build Flask backend with PyInstaller
+        run: |
+          python -m venv venv
+          .\venv\Scripts\activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pyinstaller --noconfirm --onefile app.py
+        shell: cmd
+
+      - name: 🧩 Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: 📦 Install Node dependencies
+        run: npm install
+
+      - name: 🧱 Build Electron app
+        run: npm run dist
+
+      - name: 📤 Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: escapido_installer
+          path: dist/*.exe
