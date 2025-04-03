@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: ⬇️ Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: 🐍 Set up Python
         uses: actions/setup-python@v5
@@ -32,7 +32,7 @@ jobs:
           pyinstaller --noconfirm --onefile app.py
 
       - name: 📤 Upload EXE artifact
-        uses: actions/upload-artifact@2c72a42e4c3a8f29a73210c4b387c580e3fc350d
+        uses: actions/upload-artifact@v4
         with:
           name: escapido_app_exe
           path: dist/app.exe
