@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>All Timelines</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Manrope', sans-serif;
+      background-color: #f0f0f000;
+    }
+
+    .widget-container {
+      width: 280px;
+      max-height: 600px;
+      overflow-y: auto;
+      margin: 16px auto;
+      padding: 19px 19px 0 19px;
+      border-radius: 24px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      background: white;
+    }
+
+    .events-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 24px 0 24px 0;
+      width: 100%;
+    }
+
+
+    .tag-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    height: 160px;
+    gap: 16px;
+    padding: 24px;
+    border-radius: 24px;
+    background-color: #ccc;
+    text-decoration: none;
+    color: white;
+    position: relative;
+    }
+
+
+
+    .tag-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .tag-title-small {
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .tag-title-large {
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .tag-eyes {
+      width: 100px;
+      height: auto;
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+    }
+
+    .back-link {
+      text-align: center;
+      font-size: 10px;
+      margin: 16px 0;
+      color: #007AFF;
+      text-decoration: none;
+      display: block;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="widget-container">
+    <div class="events-container">
+      {% for tag in all_tags %}
+        <a href="{{ url_for('show_events_by_tag', tag=tag) }}" class="tag-card" data-tag="{{ tag }}">
+          <div>
+            <div class="tag-title-small">Full Timeline</div>
+            <div class="tag-title-large">{{ tag }}</div>
+          </div>
+          <img src="/static/eyes.png" alt="eyes" class="tag-eyes">
+        </a>
+      {% endfor %}
+    </div>
+    <a class="back-link" href="{{ url_for('index') }}">← Back to Overview</a>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const predefinedColors = {
+        "AAS": "#69BFFF",
+        "LPDP AAS": "#F4A340"
+      };
+
+      const fallbackColor = "#ccc";
+
+      document.querySelectorAll('.tag-card').forEach(card => {
+        const tag = card.dataset.tag;
+        const savedColor = localStorage.getItem("tagColor-" + tag);
+        const tagColor = savedColor || predefinedColors[tag] || fallbackColor;
+        card.style.backgroundColor = tagColor;
+      });
+    });
+  </script>
+
+</body>
+</html>

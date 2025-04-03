@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Notion Events Widget</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Manrope', sans-serif;
+      background-color: transparent;
+      overflow: hidden;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .widget-icon {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      z-index: 20;
+      background: rgba(255, 255, 255, 0);
+    }
+
+    .widget-icon img {
+      width: 16px;
+      height: 16px;
+    }
+
+    .widget-container {
+      display: flex;
+      width: 280px;
+      height: fit-content;
+      padding: 19px 19px 0px 19px;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      border-radius: 24px;
+      overflow: hidden;
+      margin: 16px auto;
+      box-shadow: none;
+      position: relative;
+      z-index: 0;
+      box-shadow: none;
+    }
+
+    .widget-container.default {
+      background: linear-gradient(161deg, #8CEFFF 7.69%, #63DDA6 96.61%);
+    }
+
+    .widget-container.warning {
+      background: linear-gradient(161deg, #FEE01D 7.69%, #FE911D 96.61%);
+    }
+
+    .widget-container.urgent {
+      background: linear-gradient(161deg, #FF8C49 7.69%, #CD092D 96.61%);
+    }
+
+    .emoji-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .date {
+      font-size: 10px;
+      font-weight: 500;
+      color: white;
+    }
+
+    .emoji-face {
+      width: 180px;
+      height: 180px;
+      border-radius: 999px;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .emoji-face img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      animation: floaty 6s ease-in-out infinite;
+    }
+
+    @keyframes floaty {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+    }
+
+    .countdown-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      margin-top: -14px;
+    }
+
+    .countdown {
+      font-size: 32px;
+      font-weight: 800;
+      color: white;
+      margin-top: -6px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.04);
+        }
+    }
+
+    .event-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: white;
+      text-align: center;
+    }
+
+    .events-container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      padding: 24px 19px 24px 19px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      background: #ffffff;
+      border-radius: 18px;
+      position: relative;
+      top: 10px;
+      z-index: 1;
+      box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.04);
+    }
+
+    .events-heading {
+      font-size: 12px;
+      font-weight: 500;
+      color: #111;
+      margin: 0;
+    }
+
+    .event-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .tag-row {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      margin-top: 3px;
+      padding: 2px 0;
+      transition: background-color 0.2s;
+      position: relative;
+    }
+
+    .tag-row:hover {
+      background-color: #f5f5f5;
+      border-radius: 4px;
+    }
+
+    .tag-pill {
+      width: 11px;
+      height: 6px;
+      border-radius: 999px;
+      display: inline-block;
+      cursor: pointer;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .tag-pill:hover {
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .tag-name {
+      font-size: 10px;
+      color: #000;
+    }
+
+    .event-item {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      font-size: 10px;
+      color: #333;
+      margin-left: 0;
+    }
+
+    .event-date {
+      width: 32px;
+      font-weight: 500;
+    }
+
+    .event-title-description {
+      flex-grow: 1;
+    }
+
+    .color-picker-popup {
+      position: absolute;
+      display: none;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: white;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      z-index: 100;
+      max-width: 140px;
+    }
+
+    .color-option {
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+
+    .color-option:hover {
+      border-color: #555;
+    }
+    
+    .drag-region {
+      -webkit-app-region: drag;
+      width: 100%;
+      height: 80px; /* Make it bigger or position it where you like */
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .no-drag {
+      -webkit-app-region: no-drag;
+      pointer-events: auto;
+    }
+
+
+
+  </style>
+</head>
+<body>
+
+  <!-- Color Picker Popup -->
+  <div class="drag-region"></div>
+  <div id="colorPickerPopup" class="color-picker-popup"></div>
+
+  <div class="widget-container {{ closest_event.theme }}">
+      <a href="{{ url_for('show_all_tags') }}" class="widget-icon no-drag">
+        <img src="/static/event-list.svg" alt="icon" />
+      </a>
+    
+
+    <div class="emoji-container">
+      <div class="date">{{ current_date }}</div>
+      <div class="emoji-face">
+        {% if closest_event.theme == 'urgent' %}
+          <img src="/static/panicked.png" alt="Panicked Emoji" />
+        {% elif closest_event.theme == 'warning' %}
+          <img src="/static/worried.png" alt="Worried Emoji" />
+        {% else %}
+          <img src="/static/calm.png" alt="Calm Emoji" />
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="countdown-container">
+      <div class="countdown">D-{{ closest_event.days_remaining }}</div>
+      <div class="event-title">
+        {{ closest_event.tags | join(', ') }} · {{ closest_event.title }}
+      </div>
+    </div>
+
+    <div class="events-container">
+      <h2 class="events-heading">Upcoming This Month</h2>
+      {% for tag, events in grouped_events.items() %}
+        <div class="event-group">
+          <div class="tag-row" data-tag="{{ tag }}">
+            <span class="tag-pill" data-tag="{{ tag }}"
+              style="background-color: {% if tag == 'AAS' %}#69BFFF{% elif tag == 'LPDP AAS' %}#F4A340{% else %}#ccc{% endif %};">
+            </span>
+            <a href="{{ url_for('show_events_by_tag', tag=tag) }}" class="tag-name"><strong>{{ tag }}</strong></a>
+          </div>
+          {% for event in events %}
+            <div class="event-item">
+              <span class="event-date">{{ event.date | datetimeformat }}</span>
+              <span class="event-title-description">{{ event.title }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <script>
+    const predefinedColors = [
+      "#69BFFF", "#F4A340", "#6DD6BE", "#FFD400", "#FF7433", "#999999",
+      "#F47B9B", "#F28BB9", "#E0A3CC", "#D0C4D9", "#C1DEE7", "#BFEBCB",
+      "#A4D57F", "#A44E88", "#844785", "#472D5B", "#000000"
+    ];
+
+    const popup = document.getElementById("colorPickerPopup");
+    let activePill = null;
+    let activeTag = null;
+
+    document.querySelectorAll(".tag-row").forEach(row => {
+      const tag = row.dataset.tag;
+      const pill = row.querySelector(".tag-pill");
+      const assigned = ["AAS", "LPDP AAS"];
+
+      // Load saved color
+      const saved = localStorage.getItem("tagColor-" + tag);
+      if (saved) pill.style.backgroundColor = saved;
+
+      // Only show picker for unassigned tags
+      if (!assigned.includes(tag)) {
+        pill.addEventListener("click", (e) => {
+          e.stopPropagation();
+          activePill = pill;
+          activeTag = tag;
+
+          const rect = pill.getBoundingClientRect();
+          popup.style.top = rect.bottom + window.scrollY + 5 + "px";
+          popup.style.left = rect.left + window.scrollX + "px";
+          popup.style.display = "flex";
+          popup.innerHTML = "";
+
+          predefinedColors.forEach(color => {
+            const dot = document.createElement("div");
+            dot.className = "color-option";
+            dot.style.backgroundColor = color;
+            dot.addEventListener("click", () => {
+              activePill.style.backgroundColor = color;
+              localStorage.setItem("tagColor-" + activeTag, color);
+              popup.style.display = "none";
+            });
+            popup.appendChild(dot);
+          });
+        });
+      }
+    });
+
+    document.addEventListener("click", () => {
+      popup.style.display = "none";
+    });
+  </script>
+
+</body>
+</html>

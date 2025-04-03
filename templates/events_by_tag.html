@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Events for {{ tag }}</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Manrope', sans-serif;
+      background-color: #f0f0f000;
+    }
+
+    .widget-container {
+      width: 280px;
+      padding: 19px 19px 0 19px;
+      margin: 16px auto;
+      border-radius: 24px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      background: white;
+      overflow: hidden;
+    }
+
+    .tag-header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      height: 160px;
+      gap: 16px;
+      padding: 24px;
+      border-radius: 24px;
+    }
+
+    .tag-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .tag-title-small {
+      font-size: 12px;
+      font-weight: 500;
+      color: white;
+    }
+
+    .tag-title-large {
+      font-size: 20px;
+      font-weight: 800;
+      color: white;
+      line-height: 1.2;
+    }
+
+    .eyes-wrapper {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: right;
+      align-items: flex-end;
+    }
+
+    .eyes-img {
+      width: 120px;
+      height: 55.71px;
+    }
+
+    .events-header {
+      padding: 16px 19px 0 19px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .events-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 16px 19px 24px 19px;
+    }
+
+    .event-item {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 10px;
+      color: #333;
+    }
+
+    .tag-pill {
+      width: 11px;
+      height: 6px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .event-date {
+      width: 40px;
+      font-weight: 500;
+    }
+
+    .event-title-description {
+      flex-grow: 1;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      font-size: 10px;
+      padding-bottom: 16px;
+      color: #007AFF;
+      text-decoration: none;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="widget-container">
+    <div class="tag-header" id="tagHeader" data-tag="{{ tag }}">
+      <div class="tag-info">
+        <div class="tag-title-small">Full Timeline</div>
+        <div class="tag-title-large">{{ tag }}</div>
+      </div>
+      <div class="eyes-wrapper">
+        <img src="/static/eyes.png" class="eyes-img" />
+      </div>
+    </div>
+
+    <div class="events-container">
+      {% if events %}
+        {% for event in events %}
+          <div class="event-item">
+            <span class="tag-pill" data-tag="{{ tag }}"></span>
+            <span class="event-date">{{ event.date | datetimeformat }}</span>
+            <span class="event-title-description">{{ event.title }}</span>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="event-item">No events found for this tag.</div>
+      {% endif %}
+    </div>
+
+    <a class="back-link" href="{{ url_for('index') }}">← Back to Overview</a>
+  </div>
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const header = document.getElementById("tagHeader");
+      const tag = header.dataset.tag;
+  
+      // Load color from localStorage
+      const savedColor = localStorage.getItem("tagColor-" + tag);
+  
+      // Fallbacks if not manually assigned
+      const predefinedColors = {
+        "AAS": "#69BFFF",
+        "LPDP AAS": "#F4A340"
+      };
+  
+      const fallbackColor = predefinedColors[tag] || "#ccc";
+      const tagColor = savedColor || fallbackColor;
+  
+      // Apply to tag header
+      if (header) {
+        header.style.backgroundColor = tagColor;
+      }
+  
+      // Apply to all matching pills
+      document.querySelectorAll(".tag-pill").forEach(pill => {
+        if (pill.dataset.tag === tag) {
+          pill.style.backgroundColor = tagColor;
+        }
+      });
+    });
+  </script>
+  
+
+</body>
+</html>

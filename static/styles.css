@@ -1,0 +1,27 @@
+.widget-container {
+    display: flex;
+    width: 552px;
+    padding: 48px 48px 0 48px;
+    flex-direction: column;
+    align-items: center;
+    gap: 56px;
+    border-radius: 60px;
+    background: linear-gradient(161deg, #8CEFFF 7.69%, #63DDA6 96.61%);
+    color: white;
+    margin: 40px auto;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
+  }
+  
+  .countdown-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  
+  .emoji-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48;
+  }
