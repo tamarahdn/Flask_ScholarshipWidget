@@ -38,16 +38,28 @@ def fetch_notion_data():
     if response.status_code == 200:
         data = response.json()
         events = []
+
         for result in data.get('results', []):
-            title = result['properties'].get('Title', {}).get('title', [{}])[0].get('text', {}).get('content', '')
-            date = result['properties'].get('Date', {}).get('date', {}).get('start', '')
-            tags = [tag['name'] for tag in result['properties'].get('Tags', {}).get('multi_select', [])]
+            properties = result.get('properties', {})
+            if not properties:
+                continue
+
+            title_data = properties.get('Title', {}).get('title', [])
+            title = title_data[0]['text']['content'] if title_data else ''
+
+            date = properties.get('Date', {}).get('date', {}).get('start', '')
+
+            tags_raw = properties.get('Tags', {}).get('multi_select', [])
+            tags = [tag.get('name', '') for tag in tags_raw if tag.get('name')]
+
             if title and date:
                 events.append({'title': title, 'date': date, 'tags': tags})
+
         return events
     else:
         print(f"[Notion API error] Status code: {response.status_code}")
         return []
+
 
 # Calculate days remaining until an event
 def calculate_days_remaining(event_date):

@@ -10,16 +10,24 @@
   "build": {
     "appId": "com.escapido.widget",
     "productName": "EscapidoWidget",
-    "publish": null,
     "files": [
       "main.js",
       "package.json",
       "node_modules/",
-      "dist/app.exe",  
+      "dist/app.exe",
+      "dist/app",
       "templates/**/*",
       "static/**/*"
     ],
     "extraResources": [
+      {
+        "from": "dist/app.exe",
+        "to": "app.exe"
+      },
+      {
+        "from": "dist/app",
+        "to": "app"
+      },
       {
         "from": "templates",
         "to": "templates"
@@ -27,8 +35,16 @@
       {
         "from": "static",
         "to": "static"
+      },
+      {
+        "from": ".env",
+        "to": ".env"
       }
     ],
+    "mac": {
+      "target": "dmg",
+      "icon": "icon.icns"
+    },
     "win": {
       "target": "nsis",
       "icon": "icon.ico"

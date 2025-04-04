@@ -1,0 +1,62 @@
+git add .github/workflows/build-windows.yml
+
+name: Build Desktop App
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # ----- Python setup -----
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate || venv\Scripts\activate
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build Flask backend with PyInstaller
+        run: |
+          source venv/bin/activate || venv\Scripts\activate
+          pyinstaller --onefile app.py
+        shell: bash
+
+      - name: Rename Flask binary for Electron
+        run: |
+          mkdir -p dist
+          cp dist/app dist/app || copy dist\\app.exe dist\\app.exe
+        shell: bash
+
+      # ----- Node/Electron setup -----
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Electron app
+        run: npm run dist
+
+      - name: Upload built app
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}-build
+          path: dist/
