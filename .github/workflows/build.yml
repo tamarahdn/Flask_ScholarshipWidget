@@ -1,0 +1,69 @@
+name: Build Desktop App
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # ----- Python setup -----
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate || venv\Scripts\activate
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build Flask backend with PyInstaller
+        run: |
+          source venv/bin/activate || venv\Scripts\activate
+          pyinstaller --onefile app.py
+        shell: bash
+
+      - name: Move Flask binary to Electron project root
+        run: |
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            cp dist/app.exe app.exe
+          else
+            cp dist/app app
+          fi
+        shell: bash
+
+      # Optional: Create dummy .env to prevent build failure
+      - name: Create dummy .env
+        run: |
+          echo "NOTION_API_TOKEN=dummy" > .env
+          echo "NOTION_DATABASE_ID=dummy" >> .env
+
+      # ----- Node/Electron setup -----
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Node dependencies
+        run: npm install
+
+      - name: Build Electron app
+        run: npm run dist
+
+      - name: Upload built app
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}-build
+          path: dist/
